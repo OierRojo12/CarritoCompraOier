@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Tienda Online con Vue</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div id="app">
+        <header>
+            <h1>Tienda Online Oier Rojo</h1>
+            <button @click="toggleCart">Ver Carrito</button>
+        </header>
+
+        <main>
+            <section class="products">
+                <div class="product" v-for="(product, index) in products" :key="index">
+                    <h2>{{ product.name }}</h2>
+                    <img :src="product.image" :alt="product.name">
+                    <p>Precio: {{ product.price }}</p>
+                    <input type="number" v-model="product.quantity" min="1">
+                    <button @click="addToCart(product); closeCart">Añadir al Carrito</button>
+                </div>
+            </section>
+
+            <aside class="sidebar" :class="{ 'show': showCart }" @click.self="closeCart">
+                <div class="cart-sidebar">
+                    <h2>Carrito</h2>
+                    <ul>
+                        <li v-for="(item, index) in cart" :key="index">
+                            {{ item.name }} - Cantidad: {{ item.quantity }} - Subtotal: {{ item.subtotal }}
+                            <button @click="removeFromCart(index)">Eliminar</button>
+                        </li>
+                    </ul>
+                    <hr>
+                    <p>Total: {{ cartTotal }}</p>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+    <script src="app.js"></script>
+
+    <script>
+        const app = new Vue({
+            el: '#app',
+            data: {
+                products: [
+                    { name: 'Nike Air Force 1 "07"', image: 'img/AirForce.jpg', price: 119.99, quantity: 1 },
+                    { name: 'Air Jordan 1 Low SE', image: 'img/AirJordan1LowSE.jpg', price: 69.97, quantity: 1 },
+                    { name: 'Nike Air Max TW', image: 'img/NikeAirMaxTW.jpg', price: 79.97, quantity: 1 },
+                    { name: 'Jordan Stay Loyal 2', image: 'img/JordanStayLoyal2.jpg', price: 59.99, quantity: 1 },
+                    { name: 'Nike Court Vision Low', image: 'img/NikeCourtVisionLow.jpg', price: 55.97, quantity: 1 },
+                    { name: 'Nike Full Force Low', image: 'img/NikeFullForceLow.jpg', price: 64.97, quantity: 1 },
+                    { name: 'Nike Go FlyEase', image: 'img/NikeGoFlyEase.jpg', price: 129.99, quantity: 1 },
+                    { name: 'Jordan Pro Strong', image: 'img/JordanProStrong.jpg', price: 74.97, quantity: 1 },
+                    { name: 'Nike Mercurial Superfly', image: 'img/NikeMercurialSuperfly9Academy.jpg', price: 94.99, quantity: 1 },
+                    { name: 'Nike Phantom Luna 2 ', image: 'img/NikePhantomLuna2EliteLV8.jpg', price: 289.99, quantity: 1 },
+                ],
+                cart: [],
+                showCart: false
+            },
+            computed: {
+                cartTotal() {
+                    return this.cart.reduce((total, item) => total + item.subtotal, 0);
+                }
+            },
+            methods: {
+                addToCart(product) {
+                    const existingItem = this.cart.find(item => item.name === product.name);
+                    const quantity = parseInt(product.quantity);
+                    if (existingItem) {
+                        existingItem.quantity = quantity;
+                        existingItem.subtotal = quantity * existingItem.price;
+                    } else {
+                        const newItem = {
+                            name: product.name,
+                            price: product.price,
+                            quantity: quantity,
+                            subtotal: product.price * quantity
+                        };
+                        this.cart.push(newItem);
+                    }
+                },
+
+                toggleCart() {
+                    this.showCart = !this.showCart;
+                },
+
+                closeCart() {
+                    this.showCart = false;
+                },
+
+                removeFromCart(index) {
+                    this.cart.splice(index, 1);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
